@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Global side panel",
+  "name": "Trivio",
   "version": "1.0",
   "description": "Shows how to display the same side panel on every site using the Side Panel API.",
   "icons": {
@@ -11,11 +11,26 @@
   "background": {
     "service_worker": "service-worker.js"
   },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["pageLogic.js"],
+      "run_at": "document_idle"
+    }
+  ],
   "action": {
     "default_title": "Click to open panel"
   },
   "side_panel": {
     "default_path": "sidepanel.html"
   },
-  "permissions": ["sidePanel"]
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "sidePanel",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://www.youtube.com/watch?v=*"
+  ]
 }

@@ -6,7 +6,7 @@ chrome.runtime.onInstalled.addListener(() => {
   console.log("Extension installed or updated, panel behavior set.");
 });
 
-// Log to console when the user clicks the extension icon
-chrome.action.onStartup.addListener((tab) => {
+// Log to console and open side panel when the extension icon is clicked
+chrome.action.onClicked.addListener((tab) => {
   console.log("Extension icon clicked by the user.");
 });

@@ -1,15 +1,83 @@
 <!doctype html>
 <html>
-  <head>
-    <title>My Sidepanel</title>
-  </head>
-  <body>
-    <h1>All sites sidepanel extension</h1>
-    <p>This side panel is enabled on all sites</p>
-    <button class=" btn-get-started" id="listClasses">Begin here!</button>
-    <button class=" btn-play-pause" id="playButton">Pause/Play</button>
 
-    <script src="sidepanel.js"></script>
+<head>
+  <title class="hello">Trivio</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
 
-  </body>
+    .input-container {
+      display: flex;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    button-submit {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    button-submit:hover {
+      background-color: #0056b3;
+    }
+
+    #responseBox {
+      margin-top: 10px;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #f9f9f9;
+      min-height: 50px;
+      color: #555;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Trivio</h1>
+  <div class="btn-div"">
+    <!-- <button class=" btn-get-started" id="listClasses">Begin!</button> -->
+  </div>
+
+  <div class="quiz-container">
+    <h1 id="question">ques</h1>
+
+    <ul>
+      <ul><button id="answer-a">A Madrid</button></ul>
+      <ul><button id="answer-b">B Berlin</button></ul>
+      <ul><button id="answer-c">C Paris</button></ul>
+      <ul><button id="answer-d">D Rome</button></ul>
+      <li hidden id="right-answer">C</li>
+    </ul>
+    <p id="feedback"></p>
+
+  </div>
+  <!-- <div class="container">
+    <h2>Ask a Question</h2>
+    <div class="input-container">
+      <input type="text" id="questionInput" placeholder="Type your question here...">
+      <button id="submitButton">Submit</button>
+    </div>
+  </div> -->
+
+  <!-- <div id="responseBox"></div> -->
+  </div>
+
+  <script src="question.js"></script>
+
+  <script src="sidepanel.js"></script>
+</body>
+
 </html>

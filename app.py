@@ -40,10 +40,11 @@ def get_questions():
     for i, (chunk, timestamp) in enumerate(chunks):
         print(f"Chunk {i + 1}:\n{chunk}\n")
         question_data = generate_questions_and_options(chunk)
-
-        # wrote the index of the chunk as well before appending
-        question_data["timestamp"] = timestamp
-        questions_data.append(question_data)            
+        if (question_data):
+            print(f"question generated successfully for chunk {i + 1}")
+            question_data["timestamp"] = timestamp
+            questions_data.append(question_data)  
+        time.sleep(0.5)          
     return jsonify(questions_data)
 
 if __name__ == "__main__":
@@ -116,6 +117,7 @@ config = GenerationConfig(temperature=0.9, response_mime_type="application/json"
 
 
 def generate_questions_and_options(chunk):
+
     try:
         prompt = f'''Generate a question from the following text chunk:\n\n{chunk}\n\nProvide 4 options, with only 1 correct option.
                     Format the output in a dictionary like such'''
@@ -131,8 +133,7 @@ def generate_questions_and_options(chunk):
         return dict_to_return
 
     except Exception as e:
-        print(f"Error during API request: {e}")
-        return "Error generating question and options.", [], ""
+        print("could not generate questions", {e})
     
 
 import re

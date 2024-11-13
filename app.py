@@ -10,13 +10,15 @@ import json
 import os
 import time
 from flask_cors import CORS
+app = Flask(__name__)
+CORS(app)
+
 
 
 # created a schema/format to give to the llm ki aise format ki json me data return kar
 import typing_extensions as typing
 
-app = Flask(__name__)
-CORS(app)
+# CORS(app)
 
 # Load the questions data from JSON file
 def load_questions():

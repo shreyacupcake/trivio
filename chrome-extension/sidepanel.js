@@ -61,7 +61,8 @@ async function send_get_question_request(video_url) {
 async function display_question() {
   try {
     // For you to do, change question text
-    
+    document.getElementById("question").textContent = question_bank[0].question;
+
     // Assuming the first question's first answer should be displayed for now
     document.getElementById("answer-a").textContent = question_bank[0].answers[0];
     document.getElementById("answer-b").textContent = question_bank[0].answers[1];

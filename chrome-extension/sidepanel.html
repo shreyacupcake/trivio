@@ -21,60 +21,38 @@
       margin-bottom: 10px;
     }
 
-    button-submit {
-      background-color: #007bff;
-      color: white;
-      border: none;
+    .answer-button {
+      background-color: #f3f9ff;
+      color: rgb(0, 0, 0);
+      border:6cap;
+      border-color: black;
       cursor: pointer;
       width: 100%;
+      font-size: 0.55cm;
     }
-
-    button-submit:hover {
-      background-color: #0056b3;
+    .answer-button:hover{
+      background-color: #f2f2f2;
     }
-
-    #responseBox {
-      margin-top: 10px;
-      padding: 15px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      background-color: #f9f9f9;
-      min-height: 50px;
-      color: #555;
+    h1 {
+      text-align: center;
     }
   </style>
 </head>
 
-<body>
-  <h1>Trivio</h1>
+<body style="background-color:powderblue;">
+  <h1>TRIVIO</h1>
   <div class="btn-div">
-    <!-- <button class=" btn-get-started" id="listClasses">Begin!</button> -->
   </div>
-
+  <br>
   <div class="quiz-container">
-    <h1 id="question">ques</h1>
-
-    <ul>
-      <li><button class="answer-button" id="answer-a">A Madrid</button></li>
-      <li><button class="answer-button" id="answer-b">B Berlin</button></li>
-      <li><button class="answer-button" id="answer-c">C Paris</button></li>
-      <li><button class="answer-button" id="answer-d">D Rome</button></li>
-    </ul>
-    <p id="feedback"></p>
+    <h1 id="question">Question</h1>
+    <br><br>
+      <button class="answer-button" id="answer-a">Option A</button><br><br><br>
+      <button class="answer-button" id="answer-b">Option B</button><br><br><br>
+      <button class="answer-button" id="answer-c">Option C</button><br><br><br>
+      <button class="answer-button" id="answer-d">Option D</button><br><br>
 
   </div>
-  <!-- <button id="answer-a">A Madrid</button> -->
-
-  <button id="get-questions"> Get questions </button>
-  <!-- <div class="container">
-    <h2>Ask a Question</h2>
-    <div class="input-container">
-      <input type="text" id="questionInput" placeholder="Type your question here...">
-      <button id="submitButton">Submit</button>
-    </div>
-  </div> -->
-
-  <!-- <div id="responseBox"></div> -->
   </div>
 
 

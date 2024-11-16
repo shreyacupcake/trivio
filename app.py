@@ -121,8 +121,7 @@ config = GenerationConfig(temperature=0.9, response_mime_type="application/json"
 def generate_questions_and_options(chunk):
 
     try:
-        prompt = f'''You are a teacher. Generate one relevant multiple-choice question based on the information delimited by triple quotes below.
-        Provide four answer choices and indicate the correct answer.
+        prompt = f'''Generate a question from the following text chunk:\n\n{chunk}\n\nProvide 4 options, with only 1 correct option.
         
         Make sure the question starts directly without prefacing it with any other text.
 

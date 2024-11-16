@@ -1,4 +1,5 @@
 let question_bank = [];
+var timestamps = [];
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log("Received message:", request);
@@ -8,11 +9,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     try {
       if (request.type === "getQuestions") {
         await send_get_question_request(request.video_url);
-        return { success: true, questions: question_bank };
-      }
-      
+        for (let item of question_bank) {
+            timestamps.push(item.timestamp);
+        }
+        return { success: true, timestamp: timestamps };
+      }      
       if (request.type === "displayQuestion") {
-        await display_question();
+        await display_question(request.idx);
         return { success: true };
       }
       
@@ -58,19 +61,39 @@ async function send_get_question_request(video_url) {
   }
 }
 
-async function display_question() {
+async function display_question(idx) {
   try {
     // For you to do, change question text
-    document.getElementById("question").textContent = question_bank[0].question;
+    document.getElementById("question").textContent = question_bank[idx].question;
 
     // Assuming the first question's first answer should be displayed for now
-    document.getElementById("answer-a").textContent = question_bank[0].answers[0];
-    document.getElementById("answer-b").textContent = question_bank[0].answers[1];
-    document.getElementById("answer-c").textContent = question_bank[0].answers[2];
-    document.getElementById("answer-d").textContent = question_bank[0].answers[3];
+    document.getElementById("answer-a").textContent = question_bank[idx].answers[0];
+    document.getElementById("answer-b").textContent = question_bank[idx].answers[1];
+    document.getElementById("answer-c").textContent = question_bank[idx].answers[2];
+    document.getElementById("answer-d").textContent = question_bank[idx].answers[3];
+    check_answer(idx);
     return true;
   } catch (error) {
     console.error("Error displaying question:", error);
     throw error;
   }
+}
+function check_answer(idx){
+  const options=['answer-a','answer-b','answer-c','answer-d'];
+  options.forEach(function(entry){
+    var element = document.getElementById(entry);
+    element.onclick = function(){
+      if (question_bank[idx].correct_answer===element.textContent){
+        element.style.backgroundColor = "green";
+      }
+      else{
+        element.style.backgroundColor = "red";
+      }
+      options.forEach(function(other_option){
+        if (other_option!==entry){
+          document.getElementById(other_option).style.backgroundColor = null;
+        }
+      })
+    };
+  })
 }

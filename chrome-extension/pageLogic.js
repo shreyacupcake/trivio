@@ -1,3 +1,5 @@
+
+
 var timestamps=[];
 async function get_questions() {
   timestamps=[];
@@ -39,7 +41,7 @@ function search_ques_index(arr, target) {
         }
     }
     // Check if the found element is within the range [target - 1, target + 1]
-    if (resultIndex !== -1 && Math.abs(arr[resultIndex] - target) <= 1) {
+    if (resultIndex !== -1 && target - arr[resultIndex] <= 1) {
         return resultIndex;
     }
 

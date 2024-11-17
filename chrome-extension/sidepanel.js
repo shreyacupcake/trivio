@@ -9,6 +9,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     try {
       if (request.type === "getQuestions") {
         await send_get_question_request(request.video_url);
+        timestamps = [];
         for (let item of question_bank) {
             timestamps.push(item.timestamp);
         }
@@ -66,25 +67,39 @@ async function display_question(idx) {
     // For you to do, change question text
     document.getElementById("question").textContent = question_bank[idx].question;
 
-    // Assuming the first question's first answer should be displayed for now
-    document.getElementById("answer-a").textContent = question_bank[idx].answers[0];
-    document.getElementById("answer-b").textContent = question_bank[idx].answers[1];
-    document.getElementById("answer-c").textContent = question_bank[idx].answers[2];
-    document.getElementById("answer-d").textContent = question_bank[idx].answers[3];
-    check_answer(idx);
+    populate_options_and_check_answer(idx);
     return true;
   } catch (error) {
     console.error("Error displaying question:", error);
     throw error;
   }
 }
-function check_answer(idx){
+function populate_options_and_check_answer(idx){
   const options=['answer-a','answer-b','answer-c','answer-d'];
+  const continueButton = document.getElementById('continue');
+  if (continueButton.style.display === "block"){
+    return;
+  }
+  continueButton.onclick = null;
   options.forEach(function(entry){
     var element = document.getElementById(entry);
+    element.style.display = "block";
+    element.textContent = question_bank[idx].answers[options.indexOf(entry)];
     element.onclick = function(){
       if (question_bank[idx].correct_answer===element.textContent){
         element.style.backgroundColor = "green";
+
+        continueButton.style.display = "block";
+        continueButton.onclick = function(){
+          document.getElementById("question").textContent = "Waiting for next question...";
+          options.forEach(function(option_choice){
+
+            document.getElementById(option_choice).style.display = "none";
+            document.getElementById(option_choice).style.backgroundColor = null;
+          })
+          continueButton.style.display = "none";
+          playVideo();
+        }
       }
       else{
         element.style.backgroundColor = "red";
@@ -96,4 +111,22 @@ function check_answer(idx){
       })
     };
   })
+}
+
+
+function playVideo() {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs.length === 0) {
+          console.error("No active tab found");
+          return;
+      }
+
+      chrome.tabs.sendMessage(tabs[0].id, { type: "playVideo" }, (response) => {
+          if (response?.success) {
+              console.log("Video playback started successfully");
+          } else {
+              console.error("Failed to play video:", response?.error);
+          }
+      });
+  });
 }

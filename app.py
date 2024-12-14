@@ -63,10 +63,7 @@ def pre_processing(video_id):
         sentence = segment["text"]
         curr_words = segment["text"].split()
         running_total += len(curr_words)
-        # potential problem here.. the 2nd value of this tuple is sometimes exceeding the length of the vid (in seconds).
-        # timestamps_prefix_sum.append((running_total, segment["start"] + segment["duration"], sentence))
 
-        # best solution according to me: use segment["start"] instead of segment["start"] + segment["duration"]
         timestamps_prefix_sum.append((running_total, segment["start"], sentence))
 
     total_words = timestamps_prefix_sum[-1][0]
@@ -85,7 +82,7 @@ def mod_binary_search(target, timestamps_prefix_sum):
 
 
 def split_text_into_chunks(video_id):
-    num_questions = random.randint(8, 10) # you can change the number of questions you want to generate
+    num_questions = random.randint(8, 10)
     print(f"Generating {num_questions} questions from the transcript...")
     prefix_sum, total_words = pre_processing(video_id)
     max_words = total_words // num_questions
@@ -107,11 +104,9 @@ def split_text_into_chunks(video_id):
 class QA_data(typing.TypedDict):
     question: str
     answers: list[str]
-    correct_answer: str
+    correct_answer: list[str]
 
 
-# Load environment variables, particularly GEMINI_KEY
-load_dotenv()
 
 # Configure Gemini API
 genai.configure(api_key=os.getenv("GEMINI_KEY"))

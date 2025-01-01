@@ -82,10 +82,9 @@ def split_text_into_chunks(video_id):
 class QA_data(typing.TypedDict):
     question: str
     answers: list[str]
-    correct_answer: str
+    correct_answer: list[str]
 
-# Load environment variables, particularly GEMINI_KEY
-load_dotenv()
+
 
 # Configure Gemini API
 genai.configure(api_key=os.getenv("GEMINI_KEY"))

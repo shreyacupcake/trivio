@@ -6,26 +6,14 @@ import random
 from dotenv import load_dotenv
 import google.generativeai as genai
 from google.generativeai import GenerationConfig
-import json
-import os
 import time
 from flask_cors import CORS
+import typing
+
 app = Flask(__name__)
-CORS(app)
 
-
-
-# created a schema/format to give to the llm ki aise format ki json me data return kar
-import typing_extensions as typing
-
-# CORS(app)
-
-# Load the questions data from JSON file
-def load_questions():
-    with open("questions_data.json", "r") as json_file:
-        return json.load(json_file)
-
-questions_data = load_questions()
+# Allow CORS for all origins
+CORS(app, resources={r"/questions": {"origins": "https://www.youtube.com"}})
 
 @app.route("/")
 def index():
@@ -42,8 +30,8 @@ def get_questions():
     for i, (chunk, timestamp) in enumerate(chunks):
         print(f"Chunk {i + 1}:\n{chunk}\n")
         question_data = generate_questions_and_options(chunk)
-        if (question_data):
-            print(f"question generated successfully for chunk {i + 1}")
+        if question_data:
+            print(f"Question generated successfully for chunk {i + 1}")
             question_data["timestamp"] = timestamp
             questions_data.append(question_data)  
         time.sleep(0.5)          
@@ -52,50 +40,38 @@ def get_questions():
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
 
-
-# utility functions
+# Utility functions
 def pre_processing(video_id):
-    t=YouTubeTranscriptApi.get_transcript(video_id)
-
+    t = YouTubeTranscriptApi.get_transcript(video_id)
     timestamps_prefix_sum = []
-    running_total  = 0
+    running_total = 0
     for segment in t:
         sentence = segment["text"]
         curr_words = segment["text"].split()
         running_total += len(curr_words)
-        # potential problem here.. the 2nd value of this tuple is sometimes exceeding the length of the vid (in seconds).
-        # timestamps_prefix_sum.append((running_total, segment["start"] + segment["duration"], sentence))
-
-        # best solution according to me: use segment["start"] instead of segment["start"] + segment["duration"]
         timestamps_prefix_sum.append((running_total, segment["start"], sentence))
-
     total_words = timestamps_prefix_sum[-1][0]
     return timestamps_prefix_sum, total_words
 
 def mod_binary_search(target, timestamps_prefix_sum):
-    left = 0
-    right = len(timestamps_prefix_sum) - 1
+    left, right = 0, len(timestamps_prefix_sum) - 1
     while left < right:
         mid = (left + right) // 2
         if timestamps_prefix_sum[mid][0] < target:
             left = mid + 1
         else:
             right = mid
-    return left 
-
+    return left
 
 def split_text_into_chunks(video_id):
-    num_questions = random.randint(8, 10) # you can change the number of questions you want to generate
+    num_questions = random.randint(8, 10)
     print(f"Generating {num_questions} questions from the transcript...")
     prefix_sum, total_words = pre_processing(video_id)
     max_words = total_words // num_questions
     parsed = 0
     chunks = []
-    while (parsed < total_words):
-        if (parsed + 2 * max_words > total_words):
-            parsed = total_words
-        else:
-            parsed = parsed + max_words
+    while parsed < total_words:
+        parsed = parsed + max_words if parsed + 2 * max_words <= total_words else total_words
         target_index = mod_binary_search(parsed, prefix_sum)
         timestamp = prefix_sum[target_index][1]
         chunk = ' '.join(sentence for _, _, sentence in prefix_sum[:target_index])
@@ -103,12 +79,10 @@ def split_text_into_chunks(video_id):
         prefix_sum = prefix_sum[target_index:]
     return chunks
 
-
 class QA_data(typing.TypedDict):
     question: str
     answers: list[str]
     correct_answer: str
-
 
 # Load environment variables, particularly GEMINI_KEY
 load_dotenv()
@@ -117,26 +91,19 @@ load_dotenv()
 genai.configure(api_key=os.getenv("GEMINI_KEY"))
 config = GenerationConfig(temperature=0.9, response_mime_type="application/json", response_schema=QA_data)
 
-
 def generate_questions_and_options(chunk):
-
     try:
-        prompt = f'''Generate a question from the following text chunk:\n\n{chunk}\n\nProvide 4 options, with only 1 correct option.
-                    Format the output in a dictionary like such'''
-        
-        # Call the Gemini API
-        response = genai.GenerativeModel("gemini-1.5-flash",
-                                         system_instruction="You are an expert question maker and quizzer and need to parse some transcript chunks to generate the best questions possible",
-                                         generation_config=config)
+        prompt = f'''Generate a question from the following text chunk:\n\n{chunk}\n\nProvide 4 options, with only 1 correct option.'''
+        response = genai.GenerativeModel(
+            "gemini-1.5-flash",
+            system_instruction="You are an expert question maker and quizzer. Generate questions strictly from the given information",
+            generation_config=config
+        )
         result = response.generate_content(prompt)
-        
-        # parsed the response object
         dict_to_return = json.loads(result.parts[0].text)
         return dict_to_return
-
     except Exception as e:
-        print("could not generate questions", {e})
-    
+        print("Could not generate questions", {e})
 
 import re
 def extract_video_id(youtube_url):
